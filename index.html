@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartCalc AI Ultra</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body{margin:0;background:#000;color:#fff;font-family:sans-serif;}
+.display{padding:20px;text-align:right;font-size:42px;}
+.sub{font-size:14px;color:#aaa;text-align:right;padding:0 20px}
+.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px;}
+button{height:70px;font-size:22px;border:none;border-radius:50%;background:#333;color:#fff;}
+.op{background:#f39c12;}
+.top{background:#555;}
+</style>
+</head>
+<body>
+
+<div class="sub" id="steps"></div>
+<div class="display" id="display">0</div>
+
+<div class="buttons">
+<button class="top" onclick="clearAll()">AC</button>
+<button class="top" onclick="sqrt()">√</button>
+<button class="top" onclick="square()">x²</button>
+<button class="op" onclick="press('/')">÷</button>
+
+<button onclick="press('7')">7</button>
+<button onclick="press('8')">8</button>
+<button onclick="press('9')">9</button>
+<button class="op" onclick="press('*')">×</button>
+
+<button onclick="press('4')">4</button>
+<button onclick="press('5')">5</button>
+<button onclick="press('6')">6</button>
+<button class="op" onclick="press('-')">−</button>
+
+<button onclick="press('1')">1</button>
+<button onclick="press('2')">2</button>
+<button onclick="press('3')">3</button>
+<button class="op" onclick="press('+')">＋</button>
+
+<button onclick="press('0')">0</button>
+<button onclick="press('.')">.</button>
+<button onclick="calc()">=</button>
+<button class="op" onclick="explain()">解説</button>
+</div>
+
+<script>
+let expr="";
+
+function press(v){
+ expr+=v;
+ update();
+}
+
+function update(){
+ document.getElementById('display').innerText=expr||"0";
+}
+
+function clearAll(){
+ expr="";
+ update();
+ document.getElementById('steps').innerText="";
+}
+
+function calc(){
+ try{
+  let result=eval(expr);
+  document.getElementById('steps').innerText="";
+  expr=result.toString();
+  update();
+ }catch{
+  document.getElementById('display').innerText="Error";
+ }
+}
+
+function sqrt(){
+ expr="Math.sqrt("+expr+")";
+ update();
+}
+
+function square(){
+ expr="("+expr+")**2";
+ update();
+}
+
+function explain(){
+ let text="";
+ if(expr.includes("/")){
+   text="分数の計算：分母をそろえてから計算します。";
+ }else if(expr.includes("*")||expr.includes("/")){
+   text="掛け算・割り算を先に計算します（優先順位）。";
+ }else{
+   text="左から順に計算します。";
+ }
+ document.getElementById('steps').innerText=text;
+}
+
+if('serviceWorker' in navigator){
+ navigator.serviceWorker.register('sw.js');
+}
+</script>
+
+</body>
+</html>
